@@ -1,28 +1,38 @@
 import zmq 
 import time 
 import numpy
+import jsonlines
+from argparse import ArgumentParser
 from utils import send_array, recv_array
 
+# create zmq context
 context = zmq.Context()
 
 print('connecting to bert-multilingual server')
 socket = context.socket(zmq.REQ)
 socket.connect('tcp://localhost:5555')
 
-# Compute a representation for each message, showing various lengths supported.
-word = "Elephant"
-sentence = "I am a sentence for which I would like to get its embedding."
-paragraph = (
-    "Universal Sentence Encoder embeddings also support short paragraphs. "
-    "There is no hard limit on how long the paragraph is. Roughly, the longer "
-    "the more 'diluted' the embedding will be.")
-messages = [word, sentence, paragraph]
+def data_gen(jsonl):
+    '''takes in jsonl file and yields generator for feeding data to requests
+    :param:jsonl: path to jsonl file with text data 
+    :return: python generator for passing text to client''' 
+    with jsonlines.open(jsonl) as reader: 
+        msg_gen = (obj for obj in reader)
+    return msg_gen
 
-for i, m in enumerate(messages):
-    print("sending request %s" % i)
-    start = time.time()
-    socket.send_json(m)
-    messages = recv_array(socket)
-    end = time.time()
-    time_taken = end-start
-    print(f"received reply {messages} processing took {time_taken}")
+
+if __name__=="__main__":
+    parser = ArgumentParser()
+    parser.add_argument("jsonl", help='path to jsonl file containing new line delimited lines of text for encoding')
+    args = parser.parse_args()
+
+    msg_gen = data_gen(args.jsonl)
+    # send data to server 
+    for i, m in enumerate(msg_gen):
+        print("sending request %s" % i)
+        start = time.time()
+        socket.send_json(m)
+        messages = recv_array(socket)
+        end = time.time()
+        time_taken = end-start
+        print(f"received reply {messages} processing took {time_taken}")
