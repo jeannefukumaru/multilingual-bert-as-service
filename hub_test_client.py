@@ -1,7 +1,9 @@
 import zmq 
 import time 
 import numpy
+import json
 import jsonlines
+import pandas as pd 
 from argparse import ArgumentParser
 from utils import send_array, recv_array
 
@@ -16,23 +18,26 @@ def data_gen(jsonl):
     '''takes in jsonl file and yields generator for feeding data to requests
     :param:jsonl: path to jsonl file with text data 
     :return: python generator for passing text to client''' 
-    with jsonlines.open(jsonl) as reader: 
-        msg_gen = (obj for obj in reader)
-    return msg_gen
-
+    for msg in jsonlines.open(jsonl): 
+        yield msg
 
 if __name__=="__main__":
     parser = ArgumentParser()
     parser.add_argument("jsonl", help='path to jsonl file containing new line delimited lines of text for encoding')
     args = parser.parse_args()
-
+    start = time.time()
     msg_gen = data_gen(args.jsonl)
     # send data to server 
+    df = pd.DataFrame(columns=['sentence','embedding'])
     for i, m in enumerate(msg_gen):
         print("sending request %s" % i)
-        start = time.time()
         socket.send_json(m)
-        messages = recv_array(socket)
-        end = time.time()
-        time_taken = end-start
-        print(f"received reply {messages} processing took {time_taken}")
+        message = recv_array(socket)
+        print(f"received reply {message}")
+        msg_dictionary = {'sentence':m, 'embedding':message}
+        df.append(msg_dictionary, ignore_index=True)
+        print('reply written to file')
+    end = time.time()
+    time_taken = end-start
+    df.to_csv('processed_xnli.csv', index=False)
+    print(f"processing took {time_taken}")

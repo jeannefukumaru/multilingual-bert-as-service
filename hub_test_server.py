@@ -30,9 +30,9 @@ def preprocess(text, tokenizer):
     return tokens_tensor
 
 if __name__=="__main__":
-    parser = ArgumentParser('setup bert-multilingual for serving')
-    parser.add_argument("model-dir", help="model where pretrained model is stored")
-    args = parser.parse_args()
+    # parser = ArgumentParser('setup bert-multilingual for serving')
+    # parser.add_argument("model-dir", help="model where pretrained model is stored")
+    # args = parser.parse_args()
     while True:  
         message = socket.recv_json()
         print('received request: %s' % message)
