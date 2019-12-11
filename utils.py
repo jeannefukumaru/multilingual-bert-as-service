@@ -1,6 +1,7 @@
 # send and receive numpy arrays on ZeroMQ 
 import zmq
 import numpy
+import torch
 
 
 def send_array(socket, A, flags=0, copy=True, track=False):

@@ -10,12 +10,14 @@ from itertools import chain
 from multiprocessing import Process
 from multiprocessing.pool import Pool
 
+from transformers import BertTokenizer, BertModel
 import numpy as np 
 import zmq 
-from zmq.decorators as zmqd
+import zmq.decorators as zmqd
 from termcolor import colored
 from zmq.utils import jsonapi
-from utils import * 
+from utils import send_array, recv_array 
+from zmq_decor import multi_socket
 
 __all__ = ['__version__', 'MBertServer']
 __version__ = '0.1'
@@ -160,11 +162,11 @@ class MBertServer(threading.Thread):
                     sink.send_multipart([client, msg, jsonapi.dumps({**status_runtime,
                                                                      **self.status_args,
                                                                      **self.status_static}), req_id])
-                    else:
-                        self.logger.info('new encode request\treq id: %d\tsize: %d\tclient: %s' %
-                                         (int(req_id), int(msg_len), client))
-                        # register a new job at sink
-                        sink.send_multipart([client, ServerCmd.new_job, msg_len, req_id])
+                else:
+                    self.logger.info('new encode request\treq id: %d\tsize: %d\tclient: %s' %
+                                     (int(req_id), int(msg_len), client))
+                    # register a new job at sink
+                    sink.send_multipart([client, ServerCmd.new_job, msg_len, req_id])
                         # renew the backend socket to prevent large job queueing up
                     # [0] is reserved for high priority job
                     # last used backennd shouldn't be selected either as it may be queued up already
@@ -465,8 +467,8 @@ class BertWorker(Process):
 
         sink_embed.connect(self.sink_address)
         sink_token.connect(self.sink_address)
-        with toch.no_grad():            
-            for output in model(self.input_fn_builder(receivers, sink_token):
+        with torch.no_grad():            
+            for output in get_model(self.input_fn_builder(receivers, sink_token)):
                 encoded_layers = output[0].numpy()
                 send_array(sock, encoded_layers)
                 logger.info('job done\tsize: %s\tclient: %s' % (r['encodes'].shape, r['client_id']))
@@ -478,7 +480,7 @@ class BertWorker(Process):
             # Windows does not support logger in MP environment, thus get a new logger
             # inside the process for better compatibility
             logger = set_logger(colored('WORKER-%d' % self.worker_id, 'yellow'), self.verbose)
-            tokenizer = FullTokenizer(vocab_file=os.path.join(self.model_dir, 'vocab.txt'), do_lower_case=self.do_lower_case)
+            tokenizer = BertTokenizer(vocab_file=os.path.join(self.model_dir, 'vocab.txt'), do_lower_case=self.do_lower_case)
 
             poller = zmq.Poller()
             for sock in socks:

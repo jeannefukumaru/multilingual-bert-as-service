@@ -4,7 +4,7 @@ import time
 import zmq
 import torch
 from transformers import BertTokenizer, BertModel
-from utils import send_array, recv_array
+from ..utils import send_array, recv_array
 from argparse import ArgumentParser
 
 context = zmq.Context()
