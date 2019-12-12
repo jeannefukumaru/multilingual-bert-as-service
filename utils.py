@@ -4,22 +4,24 @@ import numpy
 import torch
 
 
-def send_array(socket, A, flags=0, copy=True, track=False):
+def send_array_and_str(socket, A, sentence, flags=0, copy=True, track=False):
     """send a numpy array with metadata"""
     md = dict(
         dtype = str(A.dtype),
         shape = A.shape,
     )
+    socket.send_string(sentence, flags|zmq.SNDMORE)
     socket.send_json(md, flags|zmq.SNDMORE)
     return socket.send(A, flags, copy=copy, track=track)
 
-def recv_array(socket, flags=0, copy=True, track=False):
-    """recv a numpy array"""
+def recv_array_and_str(socket, flags=0, copy=True, track=False):
+    """recv a numpy array and sentence"""
+    sentence = socket.recv_string(flags=flags)
     md = socket.recv_json(flags=flags)
     msg = socket.recv(flags=flags, copy=copy, track=track)
     buf = memoryview(msg)
     A = numpy.frombuffer(buf, dtype=md['dtype'])
-    return A.reshape(md['shape'])
+    return sentence, A.reshape(md['shape'])
 
 def preprocess(text, tokenizer):
     '''tokenize text into subwords and convert to indices
