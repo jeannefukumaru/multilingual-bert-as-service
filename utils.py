@@ -2,14 +2,11 @@
 import zmq
 import numpy
 import torch
-
+import json
 
 def send_array_and_str(socket, A, sentence, flags=0, copy=True, track=False):
     """send a numpy array with metadata"""
-    md = dict(
-        dtype = str(A.dtype),
-        shape = A.shape,
-    )
+    md = dict(dtype = str(A.dtype),shape = A.shape)
     socket.send_string(sentence, flags|zmq.SNDMORE)
     socket.send_json(md, flags|zmq.SNDMORE)
     return socket.send(A, flags, copy=copy, track=track)

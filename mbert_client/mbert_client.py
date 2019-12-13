@@ -24,11 +24,11 @@ def client():
 
     ventilator = context.socket(zmq.PUSH)
     ventilator.connect('tcp://127.0.0.1:5555')
-    print('connected to ventilator')
+    print('bound to ventilator')
 
     sink = context.socket(zmq.SUB)
-    sink.connect('tcp://127.0.0.1:5556')
-    print('connected to sink')
+    sink.bind('tcp://127.0.0.1:5556')
+    print('bound to sink')
     
     # read sentences, tokenize and send to server 
     sentences = ['hamburgers with jalapeno', 'pizza with pepperoni', 'cupcakes with caramel']
@@ -37,8 +37,6 @@ def client():
         print('tokenizing sentence before sending')
         tokens_tensor = preprocess(m, tokenizer)
         send_array_and_str(ventilator, tokens_tensor, m)
-        ventilator.send_json({"hello":"hello"})
-        print('sent string')
         print('msg sent')
 
 if __name__=='__main__':
