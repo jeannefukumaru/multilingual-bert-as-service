@@ -8,10 +8,10 @@ from multiprocessing import Process
 if __name__=='__main__':
 
     # create pool of workers to distribute work to 
-    worker_pool = range(3)
-    for w in worker_pool:
-        Process(target=run_worker).start()
-        print('started worker')
+    # worker_pool = range(3)
+    # for w in worker_pool:
+    #     Process(target=run_worker).start()
+    #     print('started worker')
     
     client = Process(target=client)
     print('started client')

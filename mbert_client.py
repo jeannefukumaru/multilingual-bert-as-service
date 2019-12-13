@@ -22,13 +22,13 @@ def client():
     # create zmq context
     context = zmq.Context()
 
-    print('connecting to bert-multilingual server')
     ventilator = context.socket(zmq.PUSH)
-    ventilator.connect('tcp://localhost:5555')
+    ventilator.connect('tcp://127.0.0.1:5555')
+    print('connected to ventilator')
 
-    print('connecting to sink')
     sink = context.socket(zmq.SUB)
-    sink.connect('tcp://localhost:5556')
+    sink.connect('tcp://127.0.0.1:5556')
+    print('connected to sink')
     
     # read sentences, tokenize and send to server 
     sentences = ['hamburgers with jalapeno', 'pizza with pepperoni', 'cupcakes with caramel']
@@ -36,5 +36,10 @@ def client():
     for m in sentences:
         print('tokenizing sentence before sending')
         tokens_tensor = preprocess(m, tokenizer)
-        send_array_and_str(ventilator, m, tokens_tensor)
+        send_array_and_str(ventilator, tokens_tensor, m)
+        ventilator.send_json({"hello":"hello"})
+        print('sent string')
         print('msg sent')
+
+if __name__=='__main__':
+    client()

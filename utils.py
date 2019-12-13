@@ -31,5 +31,5 @@ def preprocess(text, tokenizer):
     '''
     tokenized_text = tokenizer.tokenize(text)
     indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    tokens_tensor = torch.tensor([indexed_tokens])
+    tokens_tensor = torch.tensor([indexed_tokens]).numpy()
     return tokens_tensor

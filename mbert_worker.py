@@ -11,11 +11,13 @@ def run_worker():
     # set up zmq
     context = zmq.Context()
     # socket to receive work from ventilator
-    work_receiver = context.socket(zmq.PULL).connect("tcp://localhost:5557")
+    work_receiver = context.socket(zmq.PULL).connect('tcp://localhost:5557')
     # socket to send results to sink
-    results_sender = context.socket(zmq.PUSH).connect("tcp://localhost:5558")
+    results_sender = context.socket(zmq.PUSH).connect('tcp://localhost:5558')
+    print('bound sockets')
     # set up model 
     model = BertModel.from_pretrained('bert-base-multilingual-cased')
+    print('loaded pre-trained model')
     model.eval()
     while True:
         sentence, tokens_tensor = recv_array_and_str(work_receiver)
@@ -23,4 +25,5 @@ def run_worker():
             outputs = model(tokens_tensor)
             encoded_layers = outputs[0].numpy()
             send_array_and_str(results_sender, encoded_layers, sentence)
+            print('sent response')
 
