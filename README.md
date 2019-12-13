@@ -1,7 +1,9 @@
-2019-12-09
-benchmark with REQ-REP architecture on XNLI test dataset 
+[WIP]
 
-TODO:
-benchmark with ventilator worker concurrent socket architecture 
+# Description
 
-some fun visualisations of multilingual embeddings 
+# Getting started 
+
+TODO: 
+package for PyPI 
+run benchmarks
