@@ -11,16 +11,16 @@ from transformers import BertTokenizer
 # setup bert tokenizer 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
-# create zmq context
-context = zmq.Context()
+# # create zmq context
+# context = zmq.Context()
 
-print('connecting to bert-multilingual server')
-ventilator = context.socket(zmq.PUSH)
-ventilator.connect('tcp://localhost:5555')
+# print('connecting to bert-multilingual server')
+# ventilator = context.socket(zmq.PUSH)
+# ventilator.connect('tcp://localhost:5555')
 
-print('connecting to sink')
-sink = context.socket(zmq.SUB)
-sink.connect('tcp://localhost:5556')
+# print('connecting to sink')
+# sink = context.socket(zmq.SUB)
+# sink.connect('tcp://localhost:5556')
 
 def data_gen(jsonl):
     '''takes in jsonl file and yields generator for feeding data to requests
@@ -45,9 +45,25 @@ if __name__=="__main__":
         message = recv_array(sink)
         print(f"received reply {message}")
         msg_dictionary = {'sentence':m, 'embedding':message}
-        df.append(msg_dictionary, ignore_index=True)
+        df = df.append(msg_dictionary, ignore_index=True)
         print('reply written to file')
     end = time.time()
     time_taken = end-start
     df.to_csv('processed_xnli.csv', index=False)
     print(f"processing took {time_taken}")
+
+# for creating multilingual emb viz 
+df = pd.read_csv('by_language.csv')
+
+def get_encs(col):
+    with torch.no_grad():
+        for s in col:
+            tokens = preprocess(s, tokenizer)
+            torch_tokens = torch.from_numpy(tokens)
+            output = model(torch_tokens)
+            enc = output[0].numpy()
+            return enc
+
+df['sent1_encs'] = df['sentence1'].apply(get_encs)
+df['sent2_encs'] = df['sentence2'].apply(get_encs)
+df.to_json('by_lang_with_embeddings.json')

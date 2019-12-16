@@ -2,7 +2,6 @@
 from mbert_worker import run_worker
 from mbert_sink import run_sink
 from mbert_ventilator import run_ventilator
-from mbert_client import client
 from multiprocessing import Process
 
 if __name__=='__main__':

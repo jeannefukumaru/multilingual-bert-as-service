@@ -1,3 +1,6 @@
 .DS_Store
 __pycache__/utils.cpython-37.pyc
 benchmark/data/
+benchmark/exp/
+mbert/client/__pycache__/
+mbert_server/__pycache__/
