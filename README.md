@@ -1,4 +1,4 @@
-[WIP]
+[WIP] 09 Dec 2019
 
 # Multilingual-Bert-as-a-service
 ### Quick start 
@@ -37,13 +37,15 @@ Each component runs in its own process to simpligy message flow and make the log
 - another informative blogpost about 
 
 # The model and its applications  
-## Multilingual BERT (M-BERT) [Devlin et.al](https://github.com/google-research/bert/blob/master/multilingual.md)
-Companies with operations in multilple countries face the challenge of contextualising their services to the local context. An telecom operator, for instance, would need an automated customer FAQ system serving responses in multiple languages. It's not scalable to build a custom pipeline for each language / country, so multilingual models that can supposedly generalise across languages are attractive in this context. 
+The model used is Multilingual BERT (M-BERT) developed by Devlin et.al and made available on the Hugging Face [`transformers` repo.]((https://github.com/google-research/bert/blob/master/multilingual.md).
+
+Companies with operations in multilple countries face the challenge of contextualising their services to the local context. An telecom operator, for instance, would need an automated customer FAQ system serving responses in multiple languages. It's not scalable to build a custom pipeline for each language / country, so multilingual models that can supposedly generalise across languages are attractive in this context. They provide a way to scale models across markets with minimal hand-engineering. 
 
 # Benchmark 
 Dataset:XNLI dataset 
 To provide sentence representations for the entire test set using a single REQ-REP architecture on a MacBook Pro 15 took 
 
 # Follow-up 
+Test code on GPU machine 
 
 
