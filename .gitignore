@@ -4,3 +4,4 @@ benchmark/data/
 benchmark/exp/
 mbert/client/__pycache__/
 mbert_server/__pycache__/
+env
