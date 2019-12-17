@@ -12,4 +12,5 @@
 
 # About the service 
 
-The service achitecture here follows the ventilator-worker-sink layout outlined in the ZeroMQ docs.  ![vent-worker](vent-worker.png)
+The service achitecture here follows the ventilator-worker-sink layout outlined in the [ZeroMQ docs](http://zguide.zeromq.org/page:all#Divide-and-Conquer).
+![vent-worker](vent-worker.png)
