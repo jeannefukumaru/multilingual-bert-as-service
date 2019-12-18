@@ -34,7 +34,6 @@ Each component runs in its own process to simpligy message flow and make the log
 ### Other work:  
 - [to serve GPT-2](https://medium.com/huggingface/scaling-a-massive-state-of-the-art-deep-learning-model-in-production-8277c5652d5f) as the autocomplete backend of their text editor app, Hugging Face implemented Gunicorn as a load balancer for individual workers. 
 - informative discussion on the relative merits of ZMQ versus Tensorflow Serving from the [Bert-as-a-service github issues.](https://github.com/hanxiao/bert-as-service/issues/70)
-- another informative blogpost about 
 
 # The model and its applications  
 The model used is Multilingual BERT (M-BERT) developed by Devlin et.al and made available on the Hugging Face [`transformers` repo.]((https://github.com/google-research/bert/blob/master/multilingual.md).
