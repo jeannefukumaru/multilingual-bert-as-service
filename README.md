@@ -1,11 +1,13 @@
 [WIP] 09 Dec 2019
 
+[WIP]
 # Multilingual-Bert-as-a-service
-### Quick start 
-1. Create a virtual python environment with virtualenv  
+### Demo 
+1. Create a virtual python environment with virtualenv
 `virtualenv env`
-2. Activate the virtual environment 
-`source env/bin/activate`
+2. Activate the virtual environment and install the required dependencies 
+`source env/bin/activate`  
+`pip install -r requirements.txt`
 3. Run `python mbert_server/server_controller.py` to set up the MBert server. This will set up each component of the server architecture in their correct order (ventilator, worker, sink). 
 3. Run `python mbert_client/mbert_client.py` to activate the client that feeds sentences to the service. 
 4. Wait for the sink to collect results! 
@@ -15,9 +17,9 @@
 The model server achitecture here implements the ventilator-worker-sink layout outlined in the [ZeroMQ docs](http://zguide.zeromq.org/page:all#Divide-and-Conquer).
 ![vent-worker](vent-worker.png)
 
-In addition to this server architecture, there are also clients to push raw sentences to the server. These raw sentences have been processed by individual workers to return MBERT sentence encodings, which are subsequently gathered by the sink before being published back to the clients. 
+In addition to this server architecture, there are also clients to push raw sentences to the server. There are three components to the server : ventilator, worker and sink. The ventilator accepts raw sentences from the client and passes them on to workers. Individual workers pick up the raw sentences and convert them to MBERT sentence encodings. The sink gathers these encodings and, for now, prints to console.  
 
-I first came across this architecture when, while looking for ways to serve models in production, I read [Han Xiao's blogpost]( https://hanxiao.io/2019/01/02/Serving-Google-BERT-in-Production-using-Tensorflow-and-ZeroMQ/) on how he designed a fast and scalable way of serving BERT in production with Tensorflow and ZeroMQ. As outlined in the blog, the benefits of this design include: 
+I first came across this ventilator-worker-sink architectural pattern when, while looking for ways to serve models in production, I read [Han Xiao's blogpost]( https://hanxiao.io/2019/01/02/Serving-Google-BERT-in-Production-using-Tensorflow-and-ZeroMQ/) on how he designed a fast and scalable way of serving BERT in production with Tensorflow and ZeroMQ. As outlined in the blog, the benefits of this design include: 
 
 #### Decoupling of server and client 
 - The MBERT model is decoupled from the downstream application clients. This means that the heavyweight model can be hosted on a separate process or more powerful GPU machine, while the downstream application clients, which tend to be more lightweight, can be run on a cheaper CPUs. There is also an added advantage: the client and server can be scaled separately as needed. "If feature extraction is the bottleneck, scale your GPU machines. If the downstream network is the bottleneck, add more CPU machines". [source](https://github.com/hanxiao/bert-as-service/issues/70)
