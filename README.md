@@ -1,6 +1,4 @@
-[WIP] 09 Dec 2019
-
-[WIP]
+[WIP] 18 Dec 2019
 # Multilingual-Bert-as-a-service
 ### Demo 
 1. Create a virtual python environment with virtualenv
