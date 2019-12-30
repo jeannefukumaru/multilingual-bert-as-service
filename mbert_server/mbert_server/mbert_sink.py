@@ -5,6 +5,8 @@ import zmq.decorators as zmqd
 from utils import *
 from multiprocessing import Process
 import multiprocessing
+import numpy as np 
+from zmq.utils import jsonapi
 
 class ServerCmd:
     terminate = b'TERMINATION'
@@ -24,8 +26,6 @@ class MbertSink(Process):
         self.exit_flag = multiprocessing.Event()
         self.logger = set_logger(colored('SINK', 'green'), args.verbose)
         self.front_sink_addr = front_sink_addr
-        self.verbose = args.verbose 
-        self.show_tokens_to_client = args.show_tokens_to_client 
         self.max_seq_len = args.max_seq_len
         self.is_read = multiprocessing.Event()
 
@@ -189,17 +189,5 @@ class SinkJob():
                     'tokens':list(chain.from_iterable(self.rokens)) if self.with_tokens else ''}
             x_info = jsonapi.dumps(x_info)
             return x, x_info
-
-    # context = zmq.Context()
-    # receiver = context.socket(zmq.PULL)
-    # receiver.bind("tcp://*:5558")
-    # print('receiver bound')
-    # while True:
-    #     result = recv_array_and_str(receiver)
-    #     print(f'result received:{result}')
-
-if __name__=='__main__':
-    MbertSink()
-
 
 

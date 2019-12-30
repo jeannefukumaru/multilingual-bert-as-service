@@ -5,6 +5,8 @@ import torch
 import json
 import logging
 import argparse 
+import os
+import uuid
 
 def send_array_and_str(socket, A, sentence, flags=0, copy=True, track=False):
     """send a numpy array with metadata"""
@@ -49,6 +51,24 @@ def auto_bind(socket):
         socket.bind('ipc://{}'.format(tmp_dir))
     return socket.getsockopt(zmq.LAST_ENDPOINT).decode('ascii')
 
+class NTLogger:
+    def __init__(self, context, verbose):
+        self.context = context
+        self.verbose = verbose
+
+    def info(self, msg, **kwargs):
+        print('I:%s:%s' % (self.context, msg), flush=True)
+
+    def debug(self, msg, **kwargs):
+        if self.verbose:
+            print('D:%s:%s' % (self.context, msg), flush=True)
+
+    def error(self, msg, **kwargs):
+        print('E:%s:%s' % (self.context, msg), flush=True)
+
+    def warning(self, msg, **kwargs):
+        print('W:%s:%s' % (self.context, msg), flush=True)
+
 def set_logger(context, verbose=False):
     if os.name == 'nt':  # for Windows
         return NTLogger(context, verbose)
@@ -64,6 +84,18 @@ def set_logger(context, verbose=False):
     logger.handlers = []
     logger.addHandler(console_handler)
     return logger
+
+def check_max_seq_len(value):
+    if value is None or value.lower() == 'none':
+        return None
+    try:
+        ivalue = int(value)
+        if ivalue <= 3:
+            raise argparse.ArgumentTypeError("%s is an invalid int value must be >3 "
+                                             "(account for maximum three special symbols in BERT model) or NONE" % value)
+    except TypeError:
+        raise argparse.ArgumentTypeError("%s is an invalid int value" % value)
+    return ivalue
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='start a BertServer for serving')
@@ -94,4 +126,6 @@ def get_args_parser():
     parser.add_argument('-prefetch_size', type=int, default=10,
                         help='the number of batches to prefetch on each worker. When running on a CPU-only machine, \
                         this is set to 0 for comparability')
+    parser.add_argument('-verbose', action='store_true', default=False,
+                        help='turn on tensorflow logging for debug')
     return parser
