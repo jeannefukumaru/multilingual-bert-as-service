@@ -4,6 +4,7 @@ import numpy
 import torch
 import json
 import logging
+import argparse 
 
 def send_array_and_str(socket, A, sentence, flags=0, copy=True, track=False):
     """send a numpy array with metadata"""
@@ -63,3 +64,34 @@ def set_logger(context, verbose=False):
     logger.handlers = []
     logger.addHandler(console_handler)
     return logger
+
+def get_args_parser():
+    parser = argparse.ArgumentParser(description='start a BertServer for serving')
+    parser.add_argument('-max_seq_len', type=check_max_seq_len, default=25,
+                        help='maximum length of a sequence, longer sequence will be trimmed on the right side. '
+                             'set it to NONE for dynamically using the longest sequence in a (mini)batch.')
+    parser.add_argument('-port', '-port_in', '-port_data', type=int, default=5555,
+                        help='server port for receiving data from client')
+    parser.add_argument('-port_out', '-port_result', type=int, default=5556,
+                        help='server port for sending result to client')
+    parser.add_argument('-num_worker', type=int, default=1,
+                        help='number of server instances')
+    parser.add_argument('-max_batch_size', type=int, default=256,
+                        help='maximum number of sequences handled by each worker')
+    parser.add_argument('-priority_batch_size', type=int, default=16,
+                        help='batch smaller than this size will be labeled as high priority,'
+                             'and jumps forward in the job queue')
+    parser.add_argument('-cpu', action='store_true', default=False,
+                        help='running on CPU (default on GPU)')
+    parser.add_argument('-gpu_memory_fraction', type=float, default=0.5,
+                        help='determine the fraction of the overall amount of memory \
+                        that each visible GPU should be allocated per worker. \
+                        Should be in range [0.0, 1.0]')
+    parser.add_argument('-device_map', type=int, nargs='+', default=[],
+                        help='specify the list of GPU device ids that will be used (id starts from 0). \
+                        If num_worker > len(device_map), then device will be reused; \
+                        if num_worker < len(device_map), then device_map[:num_worker] will be used')
+    parser.add_argument('-prefetch_size', type=int, default=10,
+                        help='the number of batches to prefetch on each worker. When running on a CPU-only machine, \
+                        this is set to 0 for comparability')
+    return parser

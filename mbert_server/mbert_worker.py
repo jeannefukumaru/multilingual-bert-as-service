@@ -19,8 +19,6 @@ class BertWorker(Process):
         self.sink_address = sink_address
         self.prefetch_size = args.prefetch_size if self.device_id > 0 else None  # set to zero for CPU-worker
         self.gpu_memory_fraction = args.gpu_memory_fraction
-        self.model_dir = args.model_dir
-        self.show_tokens_to_client = args.show_tokens_to_client
         self.is_ready = multiprocessing.Event()
 
     def close(self):

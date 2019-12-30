@@ -15,6 +15,8 @@ class MbertVentilator(threading.Thread):
     def __init__(self, args):
         super().__init__()
         self.max_seq_len = args.max_seq_len
+        self.max_batch_size = args.max_batch_size
+        self.args = args
         self.num_worker = args.num_worker
         self.num_concurrent_socket = max(8, args.num_worker * 2)
         self.port = args.port
