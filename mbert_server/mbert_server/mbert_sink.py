@@ -19,7 +19,7 @@ class ServerCmd:
     def is_valid(cmd):
         return any(not k.startswith('__') and v == cmd for k, v in vars(ServerCmd).items())
 
-class MbertSink(Process):
+class MBertSink(Process):
     def __init__(self, args, front_sink_addr):
         super().__init__()
         self.port = args.port_out 

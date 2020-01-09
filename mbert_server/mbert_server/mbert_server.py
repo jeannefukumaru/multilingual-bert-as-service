@@ -10,8 +10,8 @@ import zmq.decorators as zmqd
 from zmq.utils import jsonapi 
 import threading
 import argparse 
-from mbert_sink import MbertSink
-from mbert_worker import MbertWorker
+from mbert_sink import MBertSink
+from mbert_worker import MBertWorker
 
 class MbertServer(threading.Thread): 
     def __init__(self, args):

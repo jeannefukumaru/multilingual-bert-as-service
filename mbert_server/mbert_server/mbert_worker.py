@@ -6,9 +6,11 @@ from utils import send_array_and_str, recv_array_and_str, preprocess, set_logger
 import torch
 from multiprocessing import Process
 import multiprocessing
+import zmq.decorators as zmqd
+from zmq_decor import multi_socket
 
 
-class BertWorker(Process):
+class MBertWorker(Process):
     def __init__(self, id, args, worker_address_list, sink_address, device_id, graph_path, graph_config):
         super().__init__()
         self.worker_id = id
